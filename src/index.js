@@ -1,8 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import HelloWorld from './components/HelloWorld.jsx'
+import SynthBoard from './components/SynthBoard.jsx'
 
 document.addEventListener('DOMContentLoaded', () => {
-    ReactDOM.render(React.createElement(HelloWorld, {}), document.getElementById('main'))
+    ReactDOM.render(React.createElement(SynthBoard, {}), document.getElementById('main'))
 })
