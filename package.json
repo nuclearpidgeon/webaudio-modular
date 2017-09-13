@@ -1,0 +1,21 @@
+{
+  "name": "webaudio",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Stewart Webb <stewart.james.webb@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-react": "^6.24.1",
+    "react": "^16.0.0-rc.2",
+    "react-dom": "^16.0.0-rc.2",
+    "webpack": "^3.5.6"
+  }
+}
