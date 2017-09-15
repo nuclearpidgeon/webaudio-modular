@@ -1,6 +1,8 @@
 import React from 'react'
 
-const startFreq = 400
+import OscillatorModule from './OscillatorModule.jsx'
+
+const startFreq = 440
 
 let globalCounter = 0
 let nextFreq = startFreq
@@ -19,28 +21,25 @@ export default class SynthBoard extends React.Component {
     }
 
     addModule() {
-        globalCounter += 1
-        
-        let newOsc = this.audioContext.createOscillator()
-        newOsc.frequency.value = nextFreq
-        nextFreq = nextFreq + (startFreq / (globalCounter * 2))
-        newOsc.start()
-        newOsc.connect(this.audioContext.destination);
+        const currentFreq = nextFreq
 
+        globalCounter += 1
+        nextFreq = nextFreq + ((1 / globalCounter) * startFreq)
+        
         this.setState((prevState) => ({
             ...prevState,
             modules: [
                 ...prevState.modules,
                 {
                     name: "AAA" + globalCounter.toString(),
-                    osc: newOsc
+                    frequency: currentFreq
                 }
             ]
         }))
     }
 
     removeModule(id) {
-        this.state.modules.filter((mod) => (mod.name == id))[0].osc.stop()
+        // this.state.modules.filter((mod) => (mod.name == id))[0].osc.stop()
         this.setState((prevState) => ({
             ...prevState,
             modules: [
@@ -48,12 +47,6 @@ export default class SynthBoard extends React.Component {
             ]
         }))
 
-    }
-
-    componentDidUpdate() {
-        // this.state.modules.forEach((module) => {
-        //     if (module.running && module.osc)
-        // })
     }
 
     render() {
@@ -64,11 +57,13 @@ export default class SynthBoard extends React.Component {
                 <ul>
                     {
                         this.state.modules.map((module) => (
-                            <li key={module.name}>
-                                { module.name }
-                                <br />
-                                <button onClick={(e)=>{ this.removeModule(module.name) }}>x</button>
-                            </li>
+                            <OscillatorModule
+                                key={module.name}
+                                name={module.name}
+                                frequency={module.frequency}
+                                audioContext={this.audioContext}
+                                onRemoveClick={(e)=>{ this.removeModule(module.name) }}
+                            />
                         ))
                     }
                 </ul>
