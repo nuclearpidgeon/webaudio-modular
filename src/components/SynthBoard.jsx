@@ -17,11 +17,13 @@ export default class SynthBoard extends React.Component {
         super(props)
         this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
         this.state = {
-            oscillators: []
+            oscillators: [],
+            globalPitchShift: 0
         }
 
         this.addOscillator = this.addOscillator.bind(this)
         this.removeOscillator = this.removeOscillator.bind(this)
+        this.handlePitchShiftChange = this.handlePitchShiftChange.bind(this)
     }
 
     addOscillator() {
@@ -53,6 +55,14 @@ export default class SynthBoard extends React.Component {
 
     }
 
+    handlePitchShiftChange(e) {
+        const newVal = parseFloat(e.target.value)
+        this.setState((prevState) => ({
+            ...prevState,
+            globalPitchShift: newVal
+        }))
+    }
+
     render() {
         return (
             <div>
@@ -64,13 +74,20 @@ export default class SynthBoard extends React.Component {
                             <OscillatorModule
                                 key={osc.name}
                                 name={osc.name}
-                                frequency={osc.frequency}
+                                frequency={this.state.globalPitchShift + osc.frequency}
                                 audioContext={this.audioContext}
                                 onRemoveClick={(e)=>{ this.removeOscillator(osc.name) }}
                             />
                         ))
                     }
                 </ul>
+                <div>
+                    <label>Global Pitch Shift</label>
+                    <input
+                        type="number"
+                        value={this.state.globalPitchShift}
+                        onChange={this.handlePitchShiftChange}/>
+                </div>
             </div>
         )
     }
