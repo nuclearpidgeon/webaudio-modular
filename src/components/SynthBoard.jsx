@@ -69,15 +69,24 @@ export default class SynthBoard extends React.Component {
                 <button onClick={this.addOscillator}>Add an oscillator</button>
                 <ul>
                     {
-                        this.state.oscillators.map((osc) => (
-                            <OscillatorModule
-                                key={osc.name}
-                                name={osc.name}
-                                frequency={this.state.globalPitchShift + osc.frequency}
-                                audioContext={this.audioContext}
-                                onRemoveClick={(e)=>{ this.removeOscillator(osc.name) }}
-                            />
-                        ))
+                        this.state.oscillators.map((osc) => {
+                            let oscFreq = this.state.globalPitchShift + osc.frequency
+
+                            return (
+                                <OscillatorModule
+                                    key={osc.name}
+                                    name={osc.name}
+                                    frequency={oscFreq}
+                                    audioContext={this.audioContext}
+                                >
+                                    <li>
+                                        { osc.name } - { oscFreq }
+                                        <br />
+                                        <button onClick={(e)=>{ this.removeOscillator(osc.name) }}>x</button>
+                                    </li>
+                                </OscillatorModule>
+                            )
+                        })
                     }
                 </ul>
                 <div>

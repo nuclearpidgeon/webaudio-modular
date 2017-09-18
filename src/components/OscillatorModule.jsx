@@ -26,12 +26,6 @@ export default class OscillatorModule extends React.Component {
     }
 
     render() {
-        return (
-            <li>
-                { this.props.name } - { this.props.frequency }
-                <br />
-                <button onClick={(e)=>{ this.props.onRemoveClick(this.props.name) }}>x</button>
-            </li>
-        )
+        return this.props.children
     }
 }
