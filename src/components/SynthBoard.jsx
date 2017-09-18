@@ -8,28 +8,32 @@ let globalCounter = 0
 let nextFreq = startFreq
 let nextFreqDivider = 2
 
+const calcNextFreq = () => (
+    nextFreq + ((1 / 2^globalCounter) * startFreq)
+)
+
 export default class SynthBoard extends React.Component {
     constructor(props) {
         super(props)
         this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
         this.state = {
-            modules: []
+            oscillators: []
         }
 
-        this.addModule = this.addModule.bind(this)
-        this.removeModule = this.removeModule.bind(this)
+        this.addOscillator = this.addOscillator.bind(this)
+        this.removeOscillator = this.removeOscillator.bind(this)
     }
 
-    addModule() {
+    addOscillator() {
         const currentFreq = nextFreq
 
         globalCounter += 1
-        nextFreq = nextFreq + ((1 / globalCounter) * startFreq)
+        nextFreq = calcNextFreq(currentFreq)
         
         this.setState((prevState) => ({
             ...prevState,
-            modules: [
-                ...prevState.modules,
+            oscillators: [
+                ...prevState.oscillators,
                 {
                     name: "AAA" + globalCounter.toString(),
                     frequency: currentFreq
@@ -38,12 +42,12 @@ export default class SynthBoard extends React.Component {
         }))
     }
 
-    removeModule(id) {
-        // this.state.modules.filter((mod) => (mod.name == id))[0].osc.stop()
+    removeOscillator(id) {
+        // this.state.oscillators.filter((mod) => (mod.name == id))[0].osc.stop()
         this.setState((prevState) => ({
             ...prevState,
-            modules: [
-                ...prevState.modules.filter((mod) => (mod.name != id))
+            oscillators: [
+                ...prevState.oscillators.filter((mod) => (mod.name != id))
             ]
         }))
 
@@ -53,16 +57,16 @@ export default class SynthBoard extends React.Component {
         return (
             <div>
                 <h1>Hello world!</h1>
-                <button onClick={this.addModule}>Add a module</button>
+                <button onClick={this.addOscillator}>Add an oscillator</button>
                 <ul>
                     {
-                        this.state.modules.map((module) => (
+                        this.state.oscillators.map((osc) => (
                             <OscillatorModule
-                                key={module.name}
-                                name={module.name}
-                                frequency={module.frequency}
+                                key={osc.name}
+                                name={osc.name}
+                                frequency={osc.frequency}
                                 audioContext={this.audioContext}
-                                onRemoveClick={(e)=>{ this.removeModule(module.name) }}
+                                onRemoveClick={(e)=>{ this.removeOscillator(osc.name) }}
                             />
                         ))
                     }
