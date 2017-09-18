@@ -20,8 +20,8 @@ export default class OscillatorModule extends React.Component {
     }
 
     componentDidUpdate() {
-        if (this.props.frequency != this.oscillator.value) {
-            this.oscillator.value = this.props.frequency
+        if (this.props.frequency != this.oscillator.frequency.value) {
+            this.oscillator.frequency.value = this.props.frequency
         }
     }
 
