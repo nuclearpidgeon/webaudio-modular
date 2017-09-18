@@ -1,13 +1,28 @@
 import React from 'react'
-import { DragDropContext } from 'react-dnd'
-import HTML5Backend from 'react-dnd-html5-backend'
+import { DropTarget } from 'react-dnd'
 
 import { dragItemTypes } from '../dragTypes.js'
 import DraggableOscillator from './DraggableOscillator.jsx'
 
+const synthBoardDropSpec = {
+    drop(props, monitor) {
+        const dragDelta = monitor.getDifferenceFromInitialOffset();
+        const droppedOsc = monitor.getItem()
+
+        props.updateOscillatorPosition(droppedOsc.name, dragDelta)
+    }
+}
+
+function synthBoardDropProps(connect, monitor) {
+    return {
+        connectDropTarget: connect.dropTarget(),
+        isOver: monitor.isOver() // 'is pointer over this component?'
+    }
+}
+
 class SynthBoard extends React.Component {
     render() {
-        return (
+        return this.props.connectDropTarget(
             <div style={{
                 // position: 'absolute',
                 width: "500px",
@@ -35,4 +50,8 @@ class SynthBoard extends React.Component {
     }
 }
 
-export default DragDropContext(HTML5Backend)(SynthBoard)
+export default DropTarget(
+    dragItemTypes.OSCILLATOR,
+    synthBoardDropSpec,
+    synthBoardDropProps
+)(SynthBoard)

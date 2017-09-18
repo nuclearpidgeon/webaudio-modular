@@ -1,4 +1,6 @@
 import React from 'react'
+import { DragDropContext } from 'react-dnd'
+import HTML5Backend from 'react-dnd-html5-backend'
 
 import SynthBoard from './components/SynthBoard.jsx'
 
@@ -12,7 +14,7 @@ const calcNextFreq = () => (
     nextFreq + ((1 / 2^globalCounter) * startFreq)
 )
 
-export default class App extends React.Component {
+class App extends React.Component {
     constructor(props) {
         super(props)
         this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -24,6 +26,7 @@ export default class App extends React.Component {
         this.addOscillator = this.addOscillator.bind(this)
         this.removeOscillator = this.removeOscillator.bind(this)
         this.handlePitchShiftChange = this.handlePitchShiftChange.bind(this)
+        this.updateOscillatorPosition = this.updateOscillatorPosition.bind(this)
     }
 
     addOscillator() {
@@ -52,7 +55,26 @@ export default class App extends React.Component {
                 ...prevState.oscillators.filter((mod) => (mod.name != id))
             ]
         }))
+    }
 
+    updateOscillatorPosition(id, delta) {
+        this.setState((prevState) => ({
+            ...prevState,
+            oscillators: prevState.oscillators.map((mod) => {
+                if (mod.name == id) {
+                    const newX = Math.round(mod.position[0] + delta.x)
+                    const newY = Math.round(mod.position[1] + delta.y)
+
+                    return {
+                        ...mod,
+                        position: [newX, newY]
+                    }
+                }
+                else {
+                    return mod
+                }
+            })
+        }))
     }
 
     handlePitchShiftChange(e) {
@@ -74,6 +96,7 @@ export default class App extends React.Component {
                     oscillators={this.state.oscillators}
                     globalPitchShift={this.state.globalPitchShift}
                     removeOscillator={this.removeOscillator}
+                    updateOscillatorPosition={this.updateOscillatorPosition}
                 />
 
                 <div>
@@ -87,3 +110,5 @@ export default class App extends React.Component {
         )
     }
 }
+
+export default DragDropContext(HTML5Backend)(App)

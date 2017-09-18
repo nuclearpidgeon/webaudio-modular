@@ -34,8 +34,8 @@ class DraggableOscillator extends React.Component {
                     this.props.connectDragSource(
                         <div style={{
                             position: 'relative',
-                            top: this.props.position[0],
-                            left: this.props.position[1],
+                            left: this.props.position[0],
+                            top: this.props.position[1],
                             border: '1px solid gray',
                             opacity: this.props.isDragging ? 0.5 : 1
                         }}>
