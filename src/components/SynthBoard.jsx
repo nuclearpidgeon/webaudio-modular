@@ -45,7 +45,6 @@ export default class SynthBoard extends React.Component {
     }
 
     removeOscillator(id) {
-        // this.state.oscillators.filter((mod) => (mod.name == id))[0].osc.stop()
         this.setState((prevState) => ({
             ...prevState,
             oscillators: [
