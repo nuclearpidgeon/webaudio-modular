@@ -7,9 +7,9 @@ import DraggableOscillator from './DraggableOscillator.jsx'
 const synthBoardDropSpec = {
     drop(props, monitor) {
         const dragDelta = monitor.getDifferenceFromInitialOffset();
-        const droppedOsc = monitor.getItem()
+        const droppedModule = monitor.getItem()
 
-        props.updateOscillatorPosition(droppedOsc.name, dragDelta)
+        props.updateModulePosition(droppedModule.id, dragDelta)
     }
 }
 
@@ -30,19 +30,29 @@ class SynthBoard extends React.Component {
                 border: "1px solid black"
             }}>
                 {
-                    this.props.oscillators.map((osc) => {
-                        let oscFreq = this.props.globalPitchShift + osc.frequency
+                    this.props.modules.map((mod) => {
+                        switch (mod.type) {
+                            case 'sinosc':
+                                let oscFreq = this.props.globalPitchShift + mod.props.frequency
 
-                        return (
-                            <DraggableOscillator
-                                key={osc.name}
-                                name={osc.name}
-                                frequency={oscFreq}
-                                audioContext={this.props.audioContext}
-                                position={osc.position}
-                                onRemoveClick={(e) => { this.props.removeOscillator(osc.name) }}
-                            />
-                        )
+                                return (
+                                    <DraggableOscillator
+                                        key={mod.id}
+                                        id={mod.id}
+                                        frequency={oscFreq}
+                                        audioContext={this.props.audioContext}
+                                        position={mod.position}
+                                        onRemoveClick={(e) => { this.props.removeModule(mod.id) }}
+                                    />
+                                )
+                                
+                                break;
+                        
+                            default:
+                                console.error(`Invalid module type ${mod.type} passed to SynthBoard`)
+                                return;
+                                break;
+                        }
                     })
                 }
             </div>

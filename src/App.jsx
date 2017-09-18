@@ -10,6 +10,10 @@ let globalCounter = 0
 let nextFreq = startFreq
 let nextFreqDivider = 2
 
+function nextCounter() {
+    return globalCounter += 1
+}
+
 const calcNextFreq = () => (
     nextFreq + ((1 / 2^globalCounter) * startFreq)
 )
@@ -17,51 +21,69 @@ const calcNextFreq = () => (
 class App extends React.Component {
     constructor(props) {
         super(props)
+
         this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
         this.state = {
-            oscillators: [],
+            modules: [],
             globalPitchShift: 0
         }
 
-        this.addOscillator = this.addOscillator.bind(this)
-        this.removeOscillator = this.removeOscillator.bind(this)
+        this.addModule = this.addModule.bind(this)
+        this.removeModule = this.removeModule.bind(this)
         this.handlePitchShiftChange = this.handlePitchShiftChange.bind(this)
-        this.updateOscillatorPosition = this.updateOscillatorPosition.bind(this)
+        this.updateModulePosition = this.updateModulePosition.bind(this)
     }
 
-    addOscillator() {
+    addModule(type) {
         const currentFreq = nextFreq
 
         globalCounter += 1
         nextFreq = calcNextFreq(currentFreq)
+
+        let newModule = {
+            id: globalCounter,
+            position: [globalCounter * 5, globalCounter * 5]
+        }
+
+        switch (type) {
+            case 'sinosc':
+                newModule = {
+                    ...newModule,
+                    type: 'sinosc',
+                    props: {
+                        frequency: currentFreq,
+                    }
+                }
+                break;
+        
+            default:
+                throw `addModule called with invalid module type '${type}'`
+                break;
+        }
         
         this.setState((prevState) => ({
             ...prevState,
-            oscillators: [
-                ...prevState.oscillators,
-                {
-                    name: "AAA" + globalCounter.toString(),
-                    frequency: currentFreq,
-                    position: [globalCounter*5, globalCounter * 5]
-                }
+            modules: [
+                ...prevState.modules,
+                newModule
             ]
         }))
     }
 
-    removeOscillator(id) {
+    removeModule(id) {
         this.setState((prevState) => ({
             ...prevState,
-            oscillators: [
-                ...prevState.oscillators.filter((mod) => (mod.name != id))
+            modules: [
+                ...prevState.modules.filter((mod) => (mod.id != id))
             ]
         }))
     }
 
-    updateOscillatorPosition(id, delta) {
+    updateModulePosition(id, delta) {
         this.setState((prevState) => ({
             ...prevState,
-            oscillators: prevState.oscillators.map((mod) => {
-                if (mod.name == id) {
+            modules: prevState.modules.map((mod) => {
+                if (mod.id == id) {
                     const newX = Math.round(mod.position[0] + delta.x)
                     const newY = Math.round(mod.position[1] + delta.y)
 
@@ -89,14 +111,14 @@ class App extends React.Component {
         return (
             <div>
                 <h1>Hello world!</h1>
-                <button onClick={this.addOscillator}>Add an oscillator</button>
+                <button onClick={(e) => this.addModule('sinosc')}>Add an oscillator</button>
 
                 <SynthBoard
                     audioContext={this.audioContext}
-                    oscillators={this.state.oscillators}
+                    modules={this.state.modules}
                     globalPitchShift={this.state.globalPitchShift}
-                    removeOscillator={this.removeOscillator}
-                    updateOscillatorPosition={this.updateOscillatorPosition}
+                    removeModule={this.removeModule}
+                    updateModulePosition={this.updateModulePosition}
                 />
 
                 <div>
